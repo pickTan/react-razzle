@@ -3,15 +3,22 @@ import React from 'react';
 import { StaticRouter } from 'react-router-dom';
 import express from 'express';
 import { renderToString } from 'react-dom/server';
+import fs from 'fs'
+import {join} from 'path'
+import {setPushs} from '../lib/helper'
+
 
 const assets = require(process.env.RAZZLE_ASSETS_MANIFEST);
 
-const server = express();
+let server = express();
+
 server
   .disable('x-powered-by')
-  .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
-  .get('/*', (req, res) => {
+  // .use(express.static(process.env.RAZZLE_PUBLIC_DIR))
+  .get('/', (req, res) => {
     const context = {};
+      console.log(req.url)
+
     const markup = renderToString(
       <StaticRouter context={context} location={req.url}>
         <App />
@@ -20,8 +27,8 @@ server
     if (context.url) {
       res.redirect(context.url);
     } else {
-      res.status(200).send(
-        `<!doctype html>
+      if(res.push) setPushs([assets.client.js],res)
+      res.end(`<!doctype html>
     <html lang="">
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -41,10 +48,21 @@ server
     </head>
     <body>
         <div id="root">${markup}</div>
+        <script>
+        if ('serviceWorker' in navigator) {
+            // 为了保证首屏渲染性能，可以在页面 load 完之后注册 Service Worker
+            window.onload = function () {           
+                navigator.serviceWorker.register('/sw.js');
+            };
+        }
+</script>
     </body>
-</html>`
-      );
+</html>`);
     }
   });
+
+
+server.use('/', express.static(join(__dirname, '../build/public')))
+
 
 export default server;
