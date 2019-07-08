@@ -1,5 +1,5 @@
-const path = require('path')
 const modifyBuilder = require('razzle-plugin-pwa').default
+const modifyMPA = require('./lib/mpa-razzle-modifictions')
 
 const pwaConfig = {
   swDest: 'sw.js',
@@ -34,6 +34,8 @@ const manifestConfig = {
 
 const modify = modifyBuilder({ pwaConfig, manifestConfig })
 
+
 module.exports = {
-  plugins: [{ func: modify }],
+
+  plugins: [{ func: modify },modifyMPA],
 };
