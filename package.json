@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "babel-preset-razzle": "^3.0.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "razzle": "^3.0.0",
     "razzle-plugin-pwa": "^2.2.3",
     "razzle-plugin-typescript": "^3.0.0",
